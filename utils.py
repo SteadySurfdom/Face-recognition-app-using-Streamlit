@@ -46,7 +46,14 @@ def submitNew(name, id, image, old_idx=None):
     #Read image 
     if type(image) != np.ndarray:
         image = cv2.imdecode(np.fromstring(image.read(), np.uint8), 1)
-
+        # Ensure the image is in RGB format
+    if len(image.shape) == 2 or image.shape[2] == 1:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    elif image.shape[2] == 4:
+        image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
+    else:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    
     isFaceInPic = isFaceExists(image)
     if not isFaceInPic:
         return -1
