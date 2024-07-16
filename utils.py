@@ -43,40 +43,40 @@ def isFaceExists(image):
     return True
 def submitNew(name, id, image, old_idx=None):
     database = get_databse()
-    #Read image 
+    # Read image 
     if type(image) != np.ndarray:
-        image = cv2.imdecode(np.fromstring(image.read(), np.uint8), 1)
-        # Ensure the image is in RGB format
+        image = cv2.imdecode(np.frombuffer(image.read(), np.uint8), 1)
+
+    # Ensure the image is in RGB format
     if len(image.shape) == 2 or image.shape[2] == 1:
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
     elif image.shape[2] == 4:
         image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
     else:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    
+
     isFaceInPic = isFaceExists(image)
     if not isFaceInPic:
         return -1
-    #Encode image
+    # Encode image
     encoding = frg.face_encodings(image)[0]
-    #Append to database
-    #check if id already exists
+    # Append to database
+    # Check if id already exists
     existing_id = [database[i]['id'] for i in database.keys()]
-    #Update mode 
+    # Update mode 
     if old_idx is not None: 
         new_idx = old_idx
-    #Add mode
+    # Add mode
     else: 
         if id in existing_id:
             return 0
         new_idx = len(database)
-    image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-    database[new_idx] = {'image':image,
-                        'id': id, 
-                        'name':name,
-                        'encoding':encoding}
-    with open(PKL_PATH,'wb') as f:
-        pkl.dump(database,f)
+    database[new_idx] = {'image': image,
+                         'id': id, 
+                         'name': name,
+                         'encoding': encoding}
+    with open(PKL_PATH, 'wb') as f:
+        pkl.dump(database, f)
     return True
 def get_info_from_id(id): 
     database = get_databse() 
